@@ -6,13 +6,13 @@ import os
 app = Flask(__name__)
 
 # PostgreSQL bağlantı bilgileri
-POSTGRES_HOST = '172.31.0.10'
+POSTGRES_HOST = '34.159.153.75'
 POSTGRES_DB = 'testdb'
 POSTGRES_USER = 'postgres'
 POSTGRES_PASSWORD = 'postgres'
 
 # Redis bağlantı bilgileri
-REDIS_HOST = '172.31.0.10'
+REDIS_HOST = '34.159.153.75'
 REDIS_PORT = 6379
 
 # PostgreSQL bağlantısı oluşturma
