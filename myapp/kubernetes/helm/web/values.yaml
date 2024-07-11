@@ -1,0 +1,35 @@
+# Default values for flask-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: gramira/projectdevops
+  tag: VERSION
+
+postgres:
+  user:
+    secretName: db-secrets
+    secretKey: POSTGRES_USER
+  password:
+    secretName: db-secrets
+    secretKey: POSTGRES_PASSWORD
+  db:
+    secretName: db-secrets
+    secretKey: POSTGRES_DB
+  host:
+    secretName: db-secrets
+    secretKey: POSTGRES_HOST
+
+redis:
+  host:
+    secretName: db-secrets
+    secretKey: REDIS_HOST
+  port:
+    secretName: db-secrets
+    secretKey: REDIS_PORT
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 5000
+  nodePort: 31111
