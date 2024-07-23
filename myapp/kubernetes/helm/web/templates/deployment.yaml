@@ -1,52 +1,74 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "flask-app.fullname" . }}
+  name: {{ include "web.fullname" . }}
   labels:
-    app: flask-app
+    {{- include "web.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app: flask-app
+      {{- include "web.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app: flask-app
+        {{- include "web.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "web.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: flask-app
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          env:
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgres.user.secretName }}
-                  key: {{ .Values.postgres.user.secretKey }}
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgres.password.secretName }}
-                  key: {{ .Values.postgres.password.secretKey }}
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgres.db.secretName }}
-                  key: {{ .Values.postgres.db.secretKey }}
-            - name: POSTGRES_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgres.host.secretName }}
-                  key: {{ .Values.postgres.host.secretKey }}
-            - name: REDIS_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.redis.port.secretName }}
-                  key: {{ .Values.redis.port.secretKey }}
-            - name: REDIS_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.redis.host.secretName }}
-                  key: {{ .Values.redis.host.secretKey }}
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 5000
+            - name: http
+              containerPort: {{ .Values.service.targetport }}
+              protocol: TCP
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
