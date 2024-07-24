@@ -108,34 +108,7 @@ tolerations: []
 
 affinity: {}
 
-env:
-  - name: POSTGRES_USER
-    valueFrom:
-      secretKeyRef:
-        name: db-secrets
-        key: POSTGRES_USER
-  - name: POSTGRES_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: db-secrets
-        key: POSTGRES_PASSWORD
-  - name: POSTGRES_DB
-    valueFrom:
-      secretKeyRef:
-        name: db-secrets
-        key: POSTGRES_DB
-  - name: POSTGRES_HOST
-    valueFrom:
-      secretKeyRef:
-        name: db-secrets
-        key: POSTGRES_HOST
-  - name: REDIS_HOST
-    valueFrom:
-      secretKeyRef:
-        name: db-secrets
-        key: REDIS_HOST
-  - name: REDIS_PORT
-    valueFrom:
-      secretKeyRef:
-        name: db-secrets
-        key: REDIS_PORT
+envFrom:
+  - secretRef:
+      name: db-secrets
+
