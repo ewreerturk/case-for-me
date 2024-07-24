@@ -7,6 +7,6 @@ spec:
   ports:
     - port: 80  # Service üzerinde yayımlanan port
       targetPort: 5000  # Container içinde uygulamanın dinlediği port
-      nodePort: {{ values.nodePort }}  # Node üzerinde erişim sağlanacak port
+      nodePort: 31111  # Node üzerinde erişim sağlanacak port
   selector:
     app: flask-app
