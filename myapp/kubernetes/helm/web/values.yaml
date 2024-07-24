@@ -108,7 +108,7 @@ tolerations: []
 
 affinity: {}
 
-envFrom:
-  - secretRef:
-      name: db-secrets
+env:
+  secrets:
+    name: db-secrets
 
